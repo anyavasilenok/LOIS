@@ -10,7 +10,7 @@
 """
 
 
-import re
+import numpy as np
 
 NOT_NUMERIC = "Введите численное значение!"
 NOT_LIMITED = "Переменные множества должны лежать в промежутке [0, 1]"
@@ -76,15 +76,55 @@ def count_consequence(A, A_implication_B: dict):
     not_correct = check_if_correct(A, A_implication_B)
     predicate = dict()
     if not not_correct:
-        for key_a, value_a in A.items():
-            # tem
-            key_list = A_implication_B.keys()
-            key_values = []
-            for key in key_list:
-                if re.match(key_a, key):
-                    key_values.append(t_norma(value_a, A_implication_B.get(key)))
-            predicate.update({key_a: min(key_values)})
-        print(predicate)
-        return predicate
+        values_a_b = list(A_implication_B.values())
+        values_a = list(A.values())
+        size_a = len(A.values())
+        size_a_b = len(A_implication_B.values())
+        matrix = np.array(values_a_b).reshape(size_a, int(size_a_b/size_a))
+        print(matrix)
+        for i in range(size_a):
+            for j in range(int(size_a_b/size_a)):
+                matrix[i][j] = t_norma(matrix[i][j], values_a[i])
+        result = []
+        print("2: ", matrix)
+        for i in range(int(size_a_b/size_a)):
+            result.append(supremum([matrix[j][i] for j in range(size_a)]))
+        return result
     else:
         return not_correct
+
+
+    # for i in range(size):
+    #     for j in range(size):
+    #         matrix[i][j] = t_norma(matrix[i][j], A[i])
+    # not_correct = check_if_correct(A, A_implication_B)
+    # predicate = dict()
+    # my_list = []
+    # if not not_correct:
+    #     values_a = A.values()
+    #     values_a_b = A_implication_B.values()
+    #     for i in range(len(A.values())):
+    #         my_list.append(values_a[i] * values_a_b[i])
+    #     return my_list
+    # else:
+    #     return not_correct
+
+    # not_correct = check_if_correct(A, A_implication_B)
+    # predicate = dict()
+    # if not not_correct:
+    #     for key_a, value_a in A.items():
+    #         # tem
+    #         key_list = A_implication_B.keys()
+    #         key_values = []
+    #         for key in key_list:
+    #             if re.match(key_a, key):
+    #                 key_values.append(t_norma(value_a, A_implication_B.get(key)))
+    #         predicate.update({key_a: min(key_values)})
+    #     print(predicate)
+    #     return predicate
+    # else:
+    #     return not_correct
+
+
+# {x1: 0.9, x2: 0.8}
+# {y1: 0.5, y2: 0.7, y3: 0.6}
