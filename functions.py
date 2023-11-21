@@ -9,6 +9,9 @@
 Источники:
 """
 
+
+import re
+
 NOT_NUMERIC = "Введите численное значение!"
 NOT_LIMITED = "Переменные множества должны лежать в промежутке [0, 1]"
 
@@ -69,11 +72,19 @@ def count_predicate(A, B):
         return not_correct
 
 
-def count_consequence(A, A_implication_B):
-    print(A)
-    print(A_implication_B)
+def count_consequence(A, A_implication_B: dict):
     not_correct = check_if_correct(A, A_implication_B)
+    predicate = dict()
     if not not_correct:
-        return "Сюда дописать нужно"
+        for key_a, value_a in A.items():
+            # tem
+            key_list = A_implication_B.keys()
+            key_values = []
+            for key in key_list:
+                if re.match(key_a, key):
+                    key_values.append(t_norma(value_a, A_implication_B.get(key)))
+            predicate.update({key_a: min(key_values)})
+        print(predicate)
+        return predicate
     else:
         return not_correct
