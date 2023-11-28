@@ -7,6 +7,8 @@
         Рассолько Савва Сергеевич
 Дата выполнения: 20.11.2023
 Источники:
+Нечеткая логика: алгебраические основы и приложения. Блюмин С.Л., Шуйкова И.А., Сараев П.В.
+Прикладные нечёткие системы. Тарэнта т.
 """
 
 
@@ -14,6 +16,7 @@ import numpy as np
 
 NOT_NUMERIC = "Введите численное значение!"
 NOT_LIMITED = "Переменные множества должны лежать в промежутке [0, 1]"
+NOT_CORRECT = "Переменные множества некорректны"
 
 
 def implication(a, b):
@@ -45,15 +48,9 @@ def check_if_limited(my_dict):
     return True
 
 
-def check_if_correct(A, B):
+def check_if_correct(A):
     if consist_of_numbers(A):
         if not check_if_limited(A):
-            return NOT_LIMITED
-    else:
-        return NOT_NUMERIC
-
-    if consist_of_numbers(B):
-        if not check_if_limited(B):
             return NOT_LIMITED
     else:
         return NOT_NUMERIC
@@ -61,7 +58,7 @@ def check_if_correct(A, B):
 
 
 def count_predicate(A, B):
-    not_correct = check_if_correct(A, B)
+    not_correct = check_if_correct(A) or check_if_correct(B)
     if not not_correct:
         predicate = dict()
         for key_a, value_a in A.items():
@@ -72,8 +69,8 @@ def count_predicate(A, B):
         return not_correct
 
 
-def count_consequence(A, A_implication_B: dict):
-    not_correct = check_if_correct(A, A_implication_B)
+def count_consequence(A, A_implication_B, B):
+    not_correct = check_if_correct(A) or check_if_correct(A_implication_B) or check_if_correct(B)
     predicate = dict()
     if not not_correct:
         values_a_b = list(A_implication_B.values())
@@ -81,50 +78,20 @@ def count_consequence(A, A_implication_B: dict):
         size_a = len(A.values())
         size_a_b = len(A_implication_B.values())
         matrix = np.array(values_a_b).reshape(size_a, int(size_a_b/size_a))
-        print(matrix)
+        print("1:", matrix)
         for i in range(size_a):
             for j in range(int(size_a_b/size_a)):
                 matrix[i][j] = t_norma(matrix[i][j], values_a[i])
         result = []
-        print("2: ", matrix)
+        print("2:", matrix)
         for i in range(int(size_a_b/size_a)):
             result.append(supremum([matrix[j][i] for j in range(size_a)]))
-        return result
+        keys_b = list(B.keys())
+        [predicate.update({f"{keys_b[i]}": result[i]}) for i in range(len(result))]
+
+        return predicate
     else:
         return not_correct
-
-
-    # for i in range(size):
-    #     for j in range(size):
-    #         matrix[i][j] = t_norma(matrix[i][j], A[i])
-    # not_correct = check_if_correct(A, A_implication_B)
-    # predicate = dict()
-    # my_list = []
-    # if not not_correct:
-    #     values_a = A.values()
-    #     values_a_b = A_implication_B.values()
-    #     for i in range(len(A.values())):
-    #         my_list.append(values_a[i] * values_a_b[i])
-    #     return my_list
-    # else:
-    #     return not_correct
-
-    # not_correct = check_if_correct(A, A_implication_B)
-    # predicate = dict()
-    # if not not_correct:
-    #     for key_a, value_a in A.items():
-    #         # tem
-    #         key_list = A_implication_B.keys()
-    #         key_values = []
-    #         for key in key_list:
-    #             if re.match(key_a, key):
-    #                 key_values.append(t_norma(value_a, A_implication_B.get(key)))
-    #         predicate.update({key_a: min(key_values)})
-    #     print(predicate)
-    #     return predicate
-    # else:
-    #     return not_correct
-
 
 # {x1: 0.9, x2: 0.8}
 # {y1: 0.5, y2: 0.7, y3: 0.6}
