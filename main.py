@@ -34,6 +34,8 @@ def convert_in_dict(input_str):
         if key in my_dict:
             raise (Exception, )
         try:
+            if '-' in value:
+                raise Exception
             my_dict[key] = float(value)
         except (Exception, ):
             raise Exception
